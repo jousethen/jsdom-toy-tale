@@ -1,7 +1,9 @@
 let addToy = false;
+const createBtn = document.querySelector(".submit");
 
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector("#new-toy-btn");
+
   const toyFormContainer = document.querySelector(".container");
   const toyCollection = document.querySelector("#toy-collection");
 
@@ -9,17 +11,38 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(function (response) {
       return response.json()
     }).then(function (json) {
-
-      //Cycle through array of objects
       console.log(json);
-      let card = document.createElement("div");
-      card.class = "card";
-      toyCollection.appendChild(card);
+      for (const element of json) {
+        let card = document.createElement("div");
+        card.className = "card";
+
+        let name = document.createElement("h2");
+        name.innerHTML = element.name;
+        card.appendChild(name);
+
+        let img = document.createElement("img");
+        img.src = element.image
+        img.className = "toy-avatar";
+        card.appendChild(img);
+
+        let likes = document.createElement("p");
+        likes.innerHTML = element.likes;
+        card.appendChild(likes);
+
+        let button = document.createElement("button");
+        button.innerHTML = "Like <3";
+        button.className = "like-btn";
+        card.appendChild(button);
+
+
+        toyCollection.appendChild(card);
+      }
     });
 
 
   addBtn.addEventListener("click", () => {
     // hide & seek with the form
+
     addToy = !addToy;
     if (addToy) {
       toyFormContainer.style.display = "block";
@@ -27,4 +50,48 @@ document.addEventListener("DOMContentLoaded", () => {
       toyFormContainer.style.display = "none";
     }
   });
+
+
 });
+
+
+createBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  let inputFields = document.getElementsByClassName("input-text");
+  let newToyName = "";
+  let newToyImg = "";
+
+  for (const element of inputFields) {
+    if (element.name == "name") {
+      newToyName = element.value;
+    }
+    else if (element.name == "image") {
+      newToyImg = element.value;
+    }
+  }
+
+  let toyData = {
+    "name": newToyName,
+    "image": newToyImg,
+    "likes": 0
+  }
+
+  let toyConfig = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(toyData)
+  };
+
+  fetch("http://localhost:3000/toys", toyConfig)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (json) {
+      console.log(json);
+    })
+
+
+});
+
