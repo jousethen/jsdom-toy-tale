@@ -34,6 +34,33 @@ document.addEventListener("DOMContentLoaded", () => {
         button.className = "like-btn";
         card.appendChild(button);
 
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          let newLikes = parseInt(element.likes, 10) + 1;
+          let likeData = {
+            "likes": newLikes
+          }
+
+          let likeConfig = {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json"
+            },
+            body: JSON.stringify(likeData)
+          };
+
+          fetch(`http://localhost:3000/toys/${element.id}`, likeConfig)
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (json) {
+              likes.innerHTML = newLikes;
+            })
+
+
+        });
 
         toyCollection.appendChild(card);
       }
@@ -77,6 +104,7 @@ createBtn.addEventListener("click", (e) => {
   }
 
   let toyConfig = {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json"
